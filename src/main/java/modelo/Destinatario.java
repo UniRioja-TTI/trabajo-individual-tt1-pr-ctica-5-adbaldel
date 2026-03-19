@@ -1,5 +1,6 @@
 package modelo;
 
-public class Destinatario {
+public class Destinatario
+{
 
 }

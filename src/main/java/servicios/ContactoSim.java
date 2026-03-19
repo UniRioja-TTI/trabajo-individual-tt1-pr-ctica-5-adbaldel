@@ -1,5 +1,6 @@
 package servicios;
 
+import modelo.Punto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import modelo.Entidad;
 public class ContactoSim implements InterfazContactoSim
 {
     private List<Entidad> entidades;
+    private List<String> coloresEntidades;
 
     private Map<Integer, DatosSolicitud> solicitudes;
     private Random random;
@@ -40,6 +42,8 @@ public class ContactoSim implements InterfazContactoSim
         entidad.setDescripcion("Perros domésticos");
         entidades.add(entidad);
 
+        coloresEntidades = List.of("red", "green");
+
         // Probablemente necesite una conexion a un simulador pasada como parametro pero no existe dicha clase
         // en mi proyecto entonces lo dejo vacio
     }
@@ -61,7 +65,8 @@ public class ContactoSim implements InterfazContactoSim
     }
 
     @Override
-    public boolean isValidEntityId(int id) {
+    public boolean isValidEntityId(int id)
+    {
         boolean valid = false;
         int i = 0;
 
@@ -78,6 +83,42 @@ public class ContactoSim implements InterfazContactoSim
     public DatosSimulation descargarDatos(int ticket)
     {
         DatosSimulation sim = new DatosSimulation();
+        int maxSegundos = 10;
+        int anchoTablero = 10;
+        Map<Integer, List<Punto>> puntos = new HashMap<>();
+        List<Punto> puntosSec;
+        Punto punto;
+        int colorPunto;
+
+        sim.setMaxSegundos(maxSegundos);
+        sim.setAnchoTablero(anchoTablero);
+
+        for (int sec = 0; sec < maxSegundos; sec++)
+        {
+            puntosSec = new ArrayList<>();
+
+            for (int x = 0; x < anchoTablero; x++)
+            {
+                for (int y = 0; y < anchoTablero; y++)
+                {
+                    colorPunto = random.nextInt(0, 3);
+
+                    if (colorPunto < 2)
+                    {
+                        punto = new Punto();
+                        punto.setX(x);
+                        punto.setY(y);
+                        punto.setColor(coloresEntidades.get(colorPunto));
+
+                        puntosSec.add(punto);
+                    }
+                }
+            }
+
+            puntos.put(sec, puntosSec);
+        }
+
+        sim.setPuntos(puntos);
 
         return sim;
     }
