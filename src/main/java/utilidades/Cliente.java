@@ -1,4 +1,4 @@
-package clienteTest;
+package utilidades;
 
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
