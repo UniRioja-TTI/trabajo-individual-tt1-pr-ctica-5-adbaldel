@@ -5,13 +5,13 @@ import java.util.Map;
 
 public class DatosSimulation
 {
-    public DatosSimulation()
-    {
-    }
-
     private int maxSegundos;
     private int anchoTablero;
     private Map<Integer, List<Punto>> puntos;
+
+    public DatosSimulation()
+    {
+    }
 
     public int getMaxSegundos()
     {

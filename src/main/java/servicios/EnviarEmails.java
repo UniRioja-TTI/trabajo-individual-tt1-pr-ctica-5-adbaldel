@@ -2,24 +2,70 @@ package servicios;
 
 import interfaces.InterfazEnviarEmails;
 import modelo.Destinatario;
+import org.openapitools.client.ApiClient;
+import org.openapitools.client.ApiException;
+import org.openapitools.client.Configuration;
+import org.openapitools.client.api.EmailApi;
+import org.openapitools.client.model.EmailResponse;
 import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
 
+/**
+ * Gestor de la conexión con el servidor de email usando las utilidades generadas con el OpenAPI Generator a partir de
+ * la especificación OpenAPI del servidor dado (swagger.json).
+ */
 @Service
 public class EnviarEmails implements InterfazEnviarEmails
 {
-    private Logger logger;
+    private static final String LOCALHOST_EMAIL = "http://localhost:8080";
+    private static final String DOCKERCOMPOSE_EMAIL = "http://servicio-tt1:8080";
 
-    public EnviarEmails(Logger logger)
+    private ApiClient client;
+
+    /**
+     * Crea un gestor de comunicaciones con el servidor de email con el cliente de servidor de simulaciones por defecto
+     * conectado a http://localhost:8080
+     */
+    public EnviarEmails()
     {
-        this.logger = logger;
+        client = Configuration.getDefaultApiClient();
+        client.setBasePath(LOCALHOST_EMAIL);
     }
 
-    @Override
-    public boolean enviarEmail(Destinatario dest, String email)
+    /**
+     * Crea un gestor de comunicaciones con el servidor de email con el cliente de servidor de eail pasado como
+     * parámetro
+     *
+     * @param client el cliente del servidor de email
+     */
+    public EnviarEmails(ApiClient client)
     {
-        logger.info("Solicitud de envío de email: - destinatario: {} - mensaje: {}", dest, email);
-        return true;
+        this.client = client;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean enviarEmail(Destinatario dest, String message)
+    {
+        EmailApi apiInstance = new EmailApi(client);
+        EmailResponse result = null;
+
+        try
+        {
+            result = apiInstance.emailPost(dest.getAddress(), message);
+        }
+        catch (ApiException e)
+        {
+            System.err.println("Exception when calling EmailApi#emailPost");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Reason: " + e.getResponseBody());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }

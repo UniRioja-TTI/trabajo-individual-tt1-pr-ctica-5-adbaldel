@@ -1,125 +1,238 @@
 package servicios;
 
 import modelo.Punto;
+import org.openapitools.client.ApiClient;
+import org.openapitools.client.ApiException;
+import org.openapitools.client.Configuration;
+import org.openapitools.client.api.ResultadosApi;
+import org.openapitools.client.api.SolicitudApi;
+import org.openapitools.client.model.ResultsResponse;
+import org.openapitools.client.model.Solicitud;
+import org.openapitools.client.model.SolicitudResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import interfaces.InterfazContactoSim;
 import modelo.DatosSimulation;
 import modelo.DatosSolicitud;
 import modelo.Entidad;
 
+/**
+ * Gestor de la conexión con el servidor de simulaciones usando las utilidades generadas con el OpenAPI Generator a
+ * partir de la especificación OpenAPI del servidor dado (swagger.json).
+ */
 @Service
 public class ContactoSim implements InterfazContactoSim
 {
-    private List<Entidad> entidades;
-    private List<String> coloresEntidades;
+    private static final String LOCALHOST_SIM = "http://localhost:8080";
+    private static final String DOCKERCOMPOSE_SIM = "http://servicio-tt1:8080";
 
-    private Map<Integer, DatosSolicitud> solicitudes;
-    private Random random;
+    private String nombreUsuario;
+    private Map<Integer, Entidad> entidades;
+    private ApiClient client;
 
+    /**
+     * Crea un nuevo gestor de comunicaciones con el servidor de simulaciones con las entidades:
+     * - id: 1, nombre: gatos, descripción: Gatos salvajes
+     * - id: 2, nombre: perro, descripción: Perros domésticos
+     * , el cliente de servidor de simulaciones por defecto conectado a http://localhost:8080 y el nombre de usuario
+     * "trabajo-individual-tt1".
+     */
     public ContactoSim()
     {
-        solicitudes = new HashMap<>();
-        random = new Random(); // Le insertaria una semilla en el constructor pero IntellIJ se queja de que
-
-        entidades = new ArrayList<>();
+        entidades = new HashMap<>();
 
         Entidad entidad = new Entidad();
         entidad.setId(1);
-        entidad.setName("gatos");
+        entidad.setName("gato");
         entidad.setDescripcion("Gatos salvajes");
-        entidades.add(entidad);
+        entidades.put(entidad.getId(), entidad);
 
         entidad = new Entidad();
         entidad.setId(2);
         entidad.setName("perros");
         entidad.setDescripcion("Perros domésticos");
-        entidades.add(entidad);
+        entidades.put(entidad.getId(), entidad);
 
-        coloresEntidades = List.of("red", "green");
+        nombreUsuario = "trabajo-individual-tt1";
 
-        // Probablemente necesite una conexion a un simulador pasada como parametro pero no existe dicha clase
-        // en mi proyecto entonces lo dejo vacio
+        client = Configuration.getDefaultApiClient();
+        client.setBasePath(LOCALHOST_SIM);
     }
 
-    @Override
-    public int solicitarSimulation(DatosSolicitud sol)
+    /**
+     * Crea un nuevo gestor de comunicaciones con el servidor de simulaciones con las entidades, nombre de usuario y
+     * cliente de servidor de simulaciones pasados como parámetros. El mapa de entidades tiene como clave el id de la
+     * entidad y como valor el objeto entidad correspondiente.
+     *
+     * @param entidades el mapa de entidades con clave el id de la entidad, valor la entidad correspondiente.
+     * @param nombreUsuario el nombre de usuario a usar.
+     * @param client el cliente del servidor de simulaciones.
+     */
+    public ContactoSim(Map<Integer, Entidad> entidades, String nombreUsuario, ApiClient client)
     {
-        int token = random.nextInt(10000);
+        this.entidades = entidades;
+        this.nombreUsuario = nombreUsuario;
+        this.client = client;
+    }
 
-        solicitudes.put(token, sol);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int solicitarSimulation(DatosSolicitud datosSolicitud)
+    {
+        int token = -1;
+        SolicitudApi apiInstance = new SolicitudApi(client);
+        Solicitud solicitud;
+        SolicitudResponse result;
+
+        solicitud = datosSolcitudToSolicitud(datosSolicitud);
+
+        try
+        {
+            result = apiInstance.solicitudSolicitarPost(nombreUsuario, solicitud);
+            token = result.getTokenSolicitud();
+        }
+        catch (ApiException e)
+        {
+            System.err.println("Exception when calling SolicitudApi#solicitudSolicitarPost");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Reason: " + e.getResponseBody());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            e.printStackTrace();
+        }
 
         return token;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Entidad> getEntities()
     {
-        return entidades;
+        List<Entidad> entidadesList = new ArrayList<>();
+
+        for (Map.Entry<Integer, Entidad> entry : entidades.entrySet())
+        {
+            entidadesList.add(entry.getValue());
+        }
+
+        return entidadesList;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isValidEntityId(int id)
     {
-        boolean valid = false;
-        int i = 0;
+        boolean valid;
 
-        while (!valid && i < entidades.size())
-        {
-            valid = (id == entidades.get(i).getId());
-            i++;
-        }
+        valid = entidades.containsKey(id);
 
         return valid;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public DatosSimulation descargarDatos(int ticket)
+    public DatosSimulation descargarDatos(int tok)
     {
-        DatosSimulation sim = new DatosSimulation();
-        int maxSegundos = 10;
-        int anchoTablero = 10;
-        Map<Integer, List<Punto>> puntos = new HashMap<>();
-        List<Punto> puntosSec;
-        Punto punto;
-        int colorPunto;
+        ResultadosApi apiInstance = new ResultadosApi(client);
+        ResultsResponse result;
+        DatosSimulation datosSimulation = null;
 
-        sim.setMaxSegundos(maxSegundos);
-        sim.setAnchoTablero(anchoTablero);
-
-        for (int sec = 0; sec < maxSegundos; sec++)
+        try
         {
-            puntosSec = new ArrayList<>();
-
-            for (int x = 0; x < anchoTablero; x++)
-            {
-                for (int y = 0; y < anchoTablero; y++)
-                {
-                    colorPunto = random.nextInt(0, 3);
-
-                    if (colorPunto < 2)
-                    {
-                        punto = new Punto();
-                        punto.setX(x);
-                        punto.setY(y);
-                        punto.setColor(coloresEntidades.get(colorPunto));
-
-                        puntosSec.add(punto);
-                    }
-                }
-            }
-
-            puntos.put(sec, puntosSec);
+            result = apiInstance.resultadosPost(nombreUsuario, tok);
+            datosSimulation = dataToDatosSimulation(result.getData());
+        }
+        catch (ApiException e)
+        {
+            System.err.println("Exception when calling ResultadosApi#resultadosPost");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Reason: " + e.getResponseBody());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            e.printStackTrace();
         }
 
-        sim.setPuntos(puntos);
+        return datosSimulation;
+    }
 
-        return sim;
+    private Solicitud datosSolcitudToSolicitud(DatosSolicitud sol)
+    {
+        Solicitud solicitud = new Solicitud();
+        List<Integer> cantidadesEntidades = new ArrayList<>();
+        List<String> nombresEntidades = new ArrayList<>();
+
+        for (Map.Entry<Integer, Integer> entry : sol.getNums().entrySet())
+        {
+            cantidadesEntidades.add(entry.getValue());
+            nombresEntidades.add(entidades.get(entry.getKey()).getName());
+        }
+        solicitud.setCantidadesIniciales(cantidadesEntidades);
+        solicitud.setNombreEntidades(nombresEntidades);
+
+        return  solicitud;
+    }
+
+    private static DatosSimulation dataToDatosSimulation(String data)
+    {
+        DatosSimulation datosSimulation = new DatosSimulation();
+        String[] dataLines;
+        Map<Integer, List<Punto>> puntos = new HashMap<>();
+        int anchoTablero = -1;
+        int maxSegundos = -1;
+        int lineNumber = 0;
+        String[] lineData;
+        int sec;
+        Punto punto;
+
+        dataLines = data.split("\n");
+
+        for (String line : dataLines) {
+            if (lineNumber != 0)
+            {
+                lineData = line.split(",");
+
+                sec = Integer.parseInt(lineData[0]);
+
+                if (sec > maxSegundos)
+                {
+                    maxSegundos = sec;
+                }
+
+                punto = new Punto();
+                punto.setX(Integer.parseInt(lineData[1]));
+                punto.setY(Integer.parseInt(lineData[2]));
+                punto.setColor(lineData[3]);
+
+                if (!puntos.containsKey(sec))
+                {
+                    puntos.put(sec, new ArrayList<>());
+                }
+
+                puntos.get(sec).add(punto);
+            }
+            else
+            {
+                anchoTablero = Integer.parseInt(line);
+            }
+
+            lineNumber++;
+        }
+
+        datosSimulation.setMaxSegundos(maxSegundos);
+        datosSimulation.setAnchoTablero(anchoTablero);
+        datosSimulation.setPuntos(puntos);
+
+        return datosSimulation;
     }
 }

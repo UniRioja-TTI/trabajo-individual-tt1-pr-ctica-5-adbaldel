@@ -41,14 +41,14 @@ class ContactoSimTest
     void solicitarSimulation()
     {
         Map<Integer, Integer> nums = new HashMap<>(); // Datos para los que se sabría el resultado
+        nums.put(1, 2);
+        nums.put(2, 3);
         DatosSolicitud sol = new DatosSolicitud(nums);
         int tok;
 
         tok = contactoSim.solicitarSimulation(sol);
 
-        // assert...(): Comprobar si el token es válido
-        // O quizá, descargar datos con el token y comprobar si la simulación devuelve los datos correctos (requiere de
-        // llamar al método descargarDatos)
+        assertTrue(tok >= 0);
     }
 
     // --- Test descargarDatos -------------------------------------------------------------------
@@ -56,13 +56,13 @@ class ContactoSimTest
     @Test
     void descargarDatos()
     {
-        int tok = 1; // Token que espera el mock, o quizá, un token generado al solicitar la simulación (requiere de
-                     // llamar al método solicitarSimulation)
+        int tok = 1;
+
         DatosSimulation sim;
 
         sim = contactoSim.descargarDatos(tok);
 
-        // assert...(): Comprobar si los datos de simulación son los esperados
+        assertNotNull(sim);
     }
 
     // --- Test getEntities -------------------------------------------------------------------
@@ -75,8 +75,6 @@ class ContactoSimTest
         entities = contactoSim.getEntities();
 
         assertEquals(2, entities.size());
-        // assert...(): Comprobar que se devuelven la cantidad de entidades esperadas
-        // También se puede comprobar que sean iguales a las que se esperan
     }
 
     // --- Test isValidEntityId -------------------------------------------------------------------

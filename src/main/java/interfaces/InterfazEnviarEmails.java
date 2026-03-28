@@ -2,7 +2,18 @@ package interfaces;
 
 import modelo.Destinatario;
 
+/**
+ * Gestor de las comunicaciones con el servidor de email.
+ */
 public interface InterfazEnviarEmails
 {
-    public boolean enviarEmail(Destinatario dest, String email);
+    /**
+     * Realiza una solicitud de envío de email al servidor de emails con el contenido y destinatario pasados como
+     * parámetros. Devuelve cierto si el email se envía con éxito. En caso contrario, devuelve falso.
+     *
+     * @param dest el destinatario del email.
+     * @param message el mensaje del email.
+     * @return cierto si el email se envía con éxito, falso en caso contrario.
+     */
+    public boolean enviarEmail(Destinatario dest, String message);
 }
