@@ -1,5 +1,8 @@
-package com.tt1.trabajo;
+package com.tt1.simwebapp.presentacion;
 
+import com.tt1.simwebapp.logica.InterfazContactoSim;
+import com.tt1.simwebapp.modelo.DatosSolicitud;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,11 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-
-import interfaces.InterfazContactoSim;
-import modelo.DatosSolicitud;
 
 /**
  * Gestiona las solicitudes de simulaciones usando Java Spring. Además, registra las solicitudes realizadas y los
@@ -29,7 +27,7 @@ public class SolicitudController
     /**
      * Crea un gestor de solicitudes con la conexión al simulador y logger pasados cómo parámetros.
      *
-     * @param ics gestor de las comunicaciones (conexión) con el simulador.
+     * @param ics    gestor de las comunicaciones (conexión) con el simulador.
      * @param logger registrador de las llamadas realizadas y los errores.
      */
     public SolicitudController(InterfazContactoSim ics, Logger logger)
@@ -60,7 +58,7 @@ public class SolicitudController
      * plantilla html que muestra el token recibido al usuario).
      *
      * @param formData los datos recibidos en el POST solicitado por el html devuelto en el método solicitud.
-     * @param model el modelo de Java Spring.
+     * @param model    el modelo de Java Spring.
      * @return nombre de la plantilla html que se muestra al usuario tras rellenar la solicitud.
      */
     @PostMapping("/solicitud")

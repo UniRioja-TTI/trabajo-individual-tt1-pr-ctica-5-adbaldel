@@ -1,11 +1,11 @@
-package com.tt1.trabajo;
+package com.tt1.simwebapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"servicios", "com.tt1.trabajo"})
+@ComponentScan(basePackages = {"com.tt1.simwebapp.logica", "com.tt1.simwebapp"})
 public class TrabajoApplication
 {
 

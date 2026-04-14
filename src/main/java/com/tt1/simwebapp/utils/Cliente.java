@@ -1,8 +1,15 @@
-package utilidades;
+package com.tt1.simwebapp.utils;
 
-import org.openapitools.client.*;
-import org.openapitools.client.api.*;
-import org.openapitools.client.model.*;
+import org.openapitools.client.ApiClient;
+import org.openapitools.client.ApiException;
+import org.openapitools.client.Configuration;
+import org.openapitools.client.api.EmailApi;
+import org.openapitools.client.api.ResultadosApi;
+import org.openapitools.client.api.SolicitudApi;
+import org.openapitools.client.model.EmailResponse;
+import org.openapitools.client.model.ResultsResponse;
+import org.openapitools.client.model.Solicitud;
+import org.openapitools.client.model.SolicitudResponse;
 
 import java.util.List;
 

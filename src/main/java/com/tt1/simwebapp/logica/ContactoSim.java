@@ -1,6 +1,9 @@
-package servicios;
+package com.tt1.simwebapp.logica;
 
-import modelo.Punto;
+import com.tt1.simwebapp.modelo.DatosSimulacion;
+import com.tt1.simwebapp.modelo.DatosSolicitud;
+import com.tt1.simwebapp.modelo.Entidad;
+import com.tt1.simwebapp.modelo.Punto;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.Configuration;
@@ -16,11 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import interfaces.InterfazContactoSim;
-import modelo.DatosSimulation;
-import modelo.DatosSolicitud;
-import modelo.Entidad;
-
 /**
  * Gestor de la conexión con el servidor de simulaciones usando las utilidades generadas con el OpenAPI Generator a
  * partir de la especificación OpenAPI del servidor dado (swagger.json).
@@ -31,9 +29,9 @@ public class ContactoSim implements InterfazContactoSim
     private static final String LOCALHOST_SIM = "http://localhost:8080";
     private static final String DOCKERCOMPOSE_SIM = "http://servicio-tt1:8080";
 
-    private String nombreUsuario;
-    private Map<Integer, Entidad> entidades;
-    private ApiClient client;
+    private final String nombreUsuario;
+    private final Map<Integer, Entidad> entidades;
+    private final ApiClient client;
 
     /**
      * Crea un nuevo gestor de comunicaciones con el servidor de simulaciones con las entidades:
@@ -69,9 +67,9 @@ public class ContactoSim implements InterfazContactoSim
      * cliente de servidor de simulaciones pasados como parámetros. El mapa de entidades tiene como clave el id de la
      * entidad y como valor el objeto entidad correspondiente.
      *
-     * @param entidades el mapa de entidades con clave el id de la entidad, valor la entidad correspondiente.
+     * @param entidades     el mapa de entidades con clave el id de la entidad, valor la entidad correspondiente.
      * @param nombreUsuario el nombre de usuario a usar.
-     * @param client el cliente del servidor de simulaciones.
+     * @param client        el cliente del servidor de simulaciones.
      */
     public ContactoSim(Map<Integer, Entidad> entidades, String nombreUsuario, ApiClient client)
     {
@@ -143,16 +141,16 @@ public class ContactoSim implements InterfazContactoSim
      * {@inheritDoc}
      */
     @Override
-    public DatosSimulation descargarDatos(int tok)
+    public DatosSimulacion descargarDatos(int tok)
     {
         ResultadosApi apiInstance = new ResultadosApi(client);
         ResultsResponse result;
-        DatosSimulation datosSimulation = null;
+        DatosSimulacion datosSimulacion = null;
 
         try
         {
             result = apiInstance.resultadosPost(nombreUsuario, tok);
-            datosSimulation = dataToDatosSimulation(result.getData());
+            datosSimulacion = dataToDatosSimulation(result.getData());
         }
         catch (ApiException e)
         {
@@ -163,7 +161,7 @@ public class ContactoSim implements InterfazContactoSim
             e.printStackTrace();
         }
 
-        return datosSimulation;
+        return datosSimulacion;
     }
 
     private Solicitud datosSolcitudToSolicitud(DatosSolicitud sol)
@@ -175,64 +173,58 @@ public class ContactoSim implements InterfazContactoSim
         for (Map.Entry<Integer, Integer> entry : sol.getNums().entrySet())
         {
             cantidadesEntidades.add(entry.getValue());
-            nombresEntidades.add(entidades.get(entry.getKey()).getName());
+            nombresEntidades.add(getEntities().get(entry.getKey()).getName());
         }
         solicitud.setCantidadesIniciales(cantidadesEntidades);
         solicitud.setNombreEntidades(nombresEntidades);
 
-        return  solicitud;
+        return solicitud;
     }
 
-    private static DatosSimulation dataToDatosSimulation(String data)
+    private static DatosSimulacion dataToDatosSimulation(String data)
     {
-        DatosSimulation datosSimulation = new DatosSimulation();
+        DatosSimulacion datosSimulacion = new DatosSimulacion();
         String[] dataLines;
         Map<Integer, List<Punto>> puntos = new HashMap<>();
         int anchoTablero = -1;
         int maxSegundos = -1;
-        int lineNumber = 0;
+        String line;
         String[] lineData;
         int sec;
         Punto punto;
 
         dataLines = data.split("\n");
 
-        for (String line : dataLines) {
-            if (lineNumber != 0)
+        anchoTablero = Integer.parseInt(dataLines[0]);
+        for (int i = 1; i < dataLines.length; i++)
+        {
+            line = dataLines[i];
+            lineData = line.split(",");
+
+            sec = Integer.parseInt(lineData[0]);
+
+            if (sec > maxSegundos)
             {
-                lineData = line.split(",");
-
-                sec = Integer.parseInt(lineData[0]);
-
-                if (sec > maxSegundos)
-                {
-                    maxSegundos = sec;
-                }
-
-                punto = new Punto();
-                punto.setX(Integer.parseInt(lineData[1]));
-                punto.setY(Integer.parseInt(lineData[2]));
-                punto.setColor(lineData[3]);
-
-                if (!puntos.containsKey(sec))
-                {
-                    puntos.put(sec, new ArrayList<>());
-                }
-
-                puntos.get(sec).add(punto);
-            }
-            else
-            {
-                anchoTablero = Integer.parseInt(line);
+                maxSegundos = sec;
             }
 
-            lineNumber++;
+            punto = new Punto();
+            punto.setX(Integer.parseInt(lineData[1]));
+            punto.setY(Integer.parseInt(lineData[2]));
+            punto.setColor(lineData[3]);
+
+            if (!puntos.containsKey(sec))
+            {
+                puntos.put(sec, new ArrayList<>());
+            }
+
+            puntos.get(sec).add(punto);
         }
 
-        datosSimulation.setMaxSegundos(maxSegundos);
-        datosSimulation.setAnchoTablero(anchoTablero);
-        datosSimulation.setPuntos(puntos);
+        datosSimulacion.setMaxSegundos(maxSegundos);
+        datosSimulacion.setAnchoTablero(anchoTablero);
+        datosSimulacion.setPuntos(puntos);
 
-        return datosSimulation;
+        return datosSimulacion;
     }
 }

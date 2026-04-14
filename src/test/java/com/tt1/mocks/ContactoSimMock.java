@@ -1,10 +1,10 @@
 package com.tt1.mocks;
 
-import interfaces.InterfazContactoSim;
-import modelo.DatosSimulation;
-import modelo.DatosSolicitud;
-import modelo.Entidad;
-import modelo.Punto;
+import com.tt1.simwebapp.logica.InterfazContactoSim;
+import com.tt1.simwebapp.modelo.DatosSimulacion;
+import com.tt1.simwebapp.modelo.DatosSolicitud;
+import com.tt1.simwebapp.modelo.Entidad;
+import com.tt1.simwebapp.modelo.Punto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,9 +71,9 @@ public class ContactoSimMock implements InterfazContactoSim
     }
 
     @Override
-    public DatosSimulation descargarDatos(int ticket)
+    public DatosSimulacion descargarDatos(int token)
     {
-        DatosSimulation sim = new DatosSimulation();
+        DatosSimulacion sim = new DatosSimulacion();
         int maxSegundos = 10;
         int anchoTablero = 10;
         Map<Integer, List<Punto>> puntos = new HashMap<>();

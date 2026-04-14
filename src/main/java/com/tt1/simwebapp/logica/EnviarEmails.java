@@ -1,15 +1,12 @@
-package servicios;
+package com.tt1.simwebapp.logica;
 
-import interfaces.InterfazEnviarEmails;
-import modelo.Destinatario;
+import com.tt1.simwebapp.modelo.Destinatario;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.Configuration;
 import org.openapitools.client.api.EmailApi;
 import org.openapitools.client.model.EmailResponse;
 import org.springframework.stereotype.Service;
-
-import org.slf4j.Logger;
 
 /**
  * Gestor de la conexión con el servidor de email usando las utilidades generadas con el OpenAPI Generator a partir de
@@ -21,7 +18,7 @@ public class EnviarEmails implements InterfazEnviarEmails
     private static final String LOCALHOST_EMAIL = "http://localhost:8080";
     private static final String DOCKERCOMPOSE_EMAIL = "http://servicio-tt1:8080";
 
-    private ApiClient client;
+    private final ApiClient client;
 
     /**
      * Crea un gestor de comunicaciones con el servidor de email con el cliente de servidor de simulaciones por defecto

@@ -17,7 +17,7 @@
 	</head>
 	<body>
 		<div class="slider-container">
-		    <input type="range" id="mySlider" min="0" th:max="${maxTime}" value="50">
+		    <input type="range" id="mySlider" min="0" th:max="${maxTime}" value="0"> <!-- Cambiado el value por mí -->
 		    <span id="sliderValue">0</span>
 		</div>
 		<div class="grid" id='gr'></div>
@@ -36,6 +36,8 @@
 				}
 				document.getElementsByClassName('grid').item(0).style.gridTemplateColumns = 'repeat('+count+',50px)';
 			}
+			createSquares()
+
 			const slider = document.getElementById("mySlider");
 			const sliderDisplay = document.getElementById("sliderValue"); // Añadido por mí
 

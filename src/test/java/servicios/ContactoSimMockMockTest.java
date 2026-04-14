@@ -1,9 +1,9 @@
 package servicios;
 
 import com.tt1.mocks.ContactoSimMock;
-import modelo.DatosSimulation;
-import modelo.DatosSolicitud;
-import modelo.Entidad;
+import com.tt1.simwebapp.modelo.DatosSimulacion;
+import com.tt1.simwebapp.modelo.DatosSolicitud;
+import com.tt1.simwebapp.modelo.Entidad;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +59,7 @@ class ContactoSimMockMockTest
     {
         int tok = 1;
 
-        DatosSimulation sim;
+        DatosSimulacion sim;
 
         sim = contactoSimMock.descargarDatos(tok);
 

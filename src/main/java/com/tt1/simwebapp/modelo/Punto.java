@@ -1,4 +1,4 @@
-package modelo;
+package com.tt1.simwebapp.modelo;
 
 public class Punto
 {

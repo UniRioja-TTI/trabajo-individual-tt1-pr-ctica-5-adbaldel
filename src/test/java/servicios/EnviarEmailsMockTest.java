@@ -1,7 +1,7 @@
 package servicios;
 
 import com.tt1.mocks.EnviarEmailsMock;
-import modelo.Destinatario;
+import com.tt1.simwebapp.modelo.Destinatario;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

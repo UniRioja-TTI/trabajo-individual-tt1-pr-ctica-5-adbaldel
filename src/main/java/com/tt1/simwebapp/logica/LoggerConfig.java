@@ -1,4 +1,4 @@
-package servicios;
+package com.tt1.simwebapp.logica;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

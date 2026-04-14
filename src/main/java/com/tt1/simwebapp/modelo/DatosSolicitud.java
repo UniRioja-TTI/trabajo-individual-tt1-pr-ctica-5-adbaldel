@@ -1,10 +1,10 @@
-package modelo;
+package com.tt1.simwebapp.modelo;
 
 import java.util.Map;
 
 public class DatosSolicitud
 {
-    private Map<Integer, Integer> nums;
+    private final Map<Integer, Integer> nums;
 
     public DatosSolicitud(Map<Integer, Integer> nums)
     {

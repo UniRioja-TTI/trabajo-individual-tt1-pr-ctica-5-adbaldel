@@ -1,15 +1,15 @@
-package modelo;
+package com.tt1.simwebapp.modelo;
 
 import java.util.List;
 import java.util.Map;
 
-public class DatosSimulation
+public class DatosSimulacion
 {
     private int maxSegundos;
     private int anchoTablero;
     private Map<Integer, List<Punto>> puntos;
 
-    public DatosSimulation()
+    public DatosSimulacion()
     {
     }
 

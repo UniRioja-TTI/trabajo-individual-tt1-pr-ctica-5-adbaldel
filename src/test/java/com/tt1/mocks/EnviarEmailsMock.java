@@ -1,7 +1,7 @@
 package com.tt1.mocks;
 
-import interfaces.InterfazEnviarEmails;
-import modelo.Destinatario;
+import com.tt1.simwebapp.logica.InterfazEnviarEmails;
+import com.tt1.simwebapp.modelo.Destinatario;
 import org.slf4j.Logger;
 
 public class EnviarEmailsMock implements InterfazEnviarEmails
